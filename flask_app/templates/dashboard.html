@@ -9,6 +9,8 @@
 </head>
 <body>
     <h1>Welcome {{ user.first_name }} {{ user.last_name }}</h1>
+    <a href="/recipes/form"><button class="btn btn-success">New Recipe</button></a>
+    <a href="/logout"><button type="button" class="btn btn-secondary">Logout</button></a>
     <table class="table table-striped">
         <thead>
             <tr>
@@ -23,10 +25,10 @@
                 <td>{{ recipe.name }}</td>
                 <td>{{ recipe.under_30 }}</td>
                 <td>
-                    <a href="/recipes/view">View</a> |
+                    <a href="/recipes/{{ recipe.id }}">View</a> |
                     {% if session["user_id"] == recipe.user_id %}
-                    <a href="/recipes/edit">Edit</a> |
-                    <a href="/recipes/delete">Delete</a>
+                    <a href="/recipes/{{ recipe.id }}/edit">Edit</a> |
+                    <a href="/recipes/{{ recipe.id }}/delete">Delete</a>
                     {% endif %}
                 </td>
             </tr>

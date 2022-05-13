@@ -9,6 +9,13 @@
 </head>
 <body>
     <div class="container-sm">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
         <form action="/users/login" method="post">
             <h1>Login</h1>
             <div class="mb-3">
@@ -23,13 +30,6 @@
         </form>
     </div>
     <div class="container-sm">
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                {% for message in messages %}
-                    <p>{{ message }}</p>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
         <form action="/users/register" method="post">
             <h1>Register</h1>
             <div class="mb-3">

@@ -1,7 +1,7 @@
 import datetime
 from flask import flash
 from flask_app import app
-from flask_app.config.mysqlconnection import connectToMySQL
+from flask_app.config.mysqlconnection import connectToMySQL 
 
 class Recipe:
     db = "recipes_schema"
@@ -31,7 +31,7 @@ class Recipe:
         results = connectToMySQL(cls.db).query_db(query,data)
         if len(results) < 1:
             return False
-        return results[0]
+        return cls(results[0])
     
     @classmethod
     def get_by_name(cls,data):
@@ -39,7 +39,7 @@ class Recipe:
         results = connectToMySQL(cls.db).query_db(query,data)
         if len(results) < 1:
             return False
-        return results[0]
+        return cls(results[0])
     
     @classmethod
     def save(cls,data):

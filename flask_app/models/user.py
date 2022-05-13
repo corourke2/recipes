@@ -1,5 +1,5 @@
 import re
-from flask import flash
+from flask import flash, redirect, request, session
 from flask_bcrypt import Bcrypt
 from flask_app import app
 from flask_app.config.mysqlconnection import connectToMySQL
@@ -22,23 +22,22 @@ class User:
     @classmethod
     def get_by_id(cls,data):
         query = "SELECT * FROM users WHERE id=%(id)s;"
-        results = connectToMySQL(cls.db).query_db(query,data)
-        if len(results) < 1:
+        result = connectToMySQL(cls.db).query_db(query,data)
+        if len(result) < 1:
             return False
-        return results[0]
+        return cls(result[0])
     
     @classmethod
     def get_by_email(cls,data):
         query = "SELECT * FROM users WHERE email=%(email)s;"
-        results = connectToMySQL(cls.db).query_db(query, data)
-        if len(results) < 1:
+        result = connectToMySQL(cls.db).query_db(query, data)
+        if len(result) < 1:
             return False
-        return results[0]
+        return cls(result[0])
 
     @classmethod
     def save(cls,data):
-        pw_hash = bcrypt.generate_password_hash(data["password"])
-        query = f"INSERT INTO example_table (id, first_name, last_name, email, password, created_at, updated_at) VALUES (%(id)s, %(first_name)s, %(last_name)s, %(email)s, {pw_hash}, NOW(), NOW());"
+        query = "INSERT INTO users (first_name, last_name, email, password, created_at, updated_at) VALUES (%(first_name)s, %(last_name)s, %(email)s, %(password)s, NOW(), NOW());"
         return connectToMySQL(cls.db).query_db(query, data)
     
     @staticmethod
@@ -59,7 +58,7 @@ class User:
             flash("Last name must be at least 2 characters")
             is_valid = False
         if not user["last_name"].isalpha():
-            flash("last name can only contain letters")
+            flash("Last name can only contain letters")
             is_valid = False
         if not EMAIL_REGEX.match(user["email"]):
             flash("Invalid email address")
@@ -79,10 +78,13 @@ class User:
         if not any(char in special_char for char in user["password"]):
             flash("Password must contain at least one special character: !, @, #, $, %, &, or *")
             is_valid = False
+        return is_valid
 
     @staticmethod
     def validate_login(user):
         is_valid = True
-        db_user = User.get_by_email(user)
-        if not db_user:
+        user = User.get_by_email(user)
+        if not user:
             flash("Email is not associated with an account")
+            is_valid = False
+        return is_valid
